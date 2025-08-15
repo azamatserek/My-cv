@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cv
+    ports: ["5432:5432"]
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+  api:
+    build: ../../api
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/cv?sslmode=disable
+      PORT: "8080"
+    depends_on: [db]
+    ports: ["8080:8080"]
+  web:
+    working_dir: /web
+    build: ../../web
+    ports: ["5173:80"]
+    depends_on: [api]
+volumes:
+  dbdata:
